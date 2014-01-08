@@ -75,11 +75,9 @@ let update_weights rate lws acts ds =
   map2 (fun n d -> map2 (fun w a -> w +. (rate *. a *. d)) n acts) lws ds
 
 let backpropagate rate input expected network : network =
-  let runs   = feed_fwd input network in
-  let oins   = runs |> last |> fst    in
-  let oact   = runs |> last |> snd    in
-  let rruns  = runs |> rev |> tl      in
-  let rnws   = rev network            in
+  let runs   = feed_fwd input network  in
+  let ((oins, oact)::rruns) = rev runs in
+  let rnws   = rev network             in
   let oldelt = map3 (fun i a e -> (e -. a) *. (psigma i))   (* output layer deltas *)
                     oins oact expected in 
   let rldeltas = scan prop_error oldelt   (* layers' deltas, reversed *)
